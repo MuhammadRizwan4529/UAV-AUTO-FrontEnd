@@ -1,6 +1,6 @@
-"use client"; // Required for client-side interactions
+"use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "../../../components/ui/card";
 import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -9,26 +9,54 @@ import { addDroneSchema } from "../DroneSchema";
 import { Form } from "../../../components/ui/form";
 import InputCommon from "../../../components/common/InputCommon";
 import CardInputCommon from "../../../components/common/CardInputCommon";
+import { Button } from "../../../components/ui/button";
+import "../../globals.css";
+import SelectCommon from "@/components/common/SelectCommon";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { fetchStations } from "@/Store/Actions/stationActions";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { addDrone } from "@/Store/Actions/droneActions";
 const Page = () => {
+  const dispatch = useDispatch();
   const [inputImage, setInputImage] = useState(null);
-
+  const station = useSelector((state) => state.station);
   const initialState = {
     name: "",
     speed: "",
     flight_duration: "",
     ceiling: "",
     fps: "",
-    station: "",
+    station_id: "",
     image: "",
   };
+
   const form = useForm({
     resolver: zodResolver(addDroneSchema),
     defaultValues: initialState,
   });
 
-  const handleFormSubmit = () => {};
+  useEffect(() => {
+    dispatch(fetchStations());
+  }, [dispatch]);
+  console.log("Stations", station);
+
+  const handleFormSubmit = (data) => {
+    console.log("Form Submitted:", data);
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    dispatch(addDrone(formData));
+  };
+
+  const handleError = (errors) => {
+    console.log("Validation Errors:", errors);
+  };
+
   return (
-    <div className="flex justify-center min-h-screen p-10">
+    <div className="flex justify-center p-10 bg-[--color-avocado-100]">
       <div className="flex flex-col w-[70%] gap-4">
         <div className="content-header text-center">
           <h1 className="text-xl font-bold">Add New Drone</h1>
@@ -36,23 +64,77 @@ const Page = () => {
         </div>
         <Form {...form} className="w-full">
           <form
-            onSubmit={form.handleSubmit(handleFormSubmit)}
+            onSubmit={form.handleSubmit(handleFormSubmit, handleError)}
             className="space-y-4"
           >
-            <CardInputCommon
-              inputImage={inputImage}
-              setInputImage={setInputImage}
-            />
+            <CardInputCommon control={form.control} />
             <InputCommon
+              control={form.control}
               name="name"
               label="Name"
-              placeholder="Enter Drone Name"
+              placeholder="Enter the drone's name"
             />
+            <InputCommon
+              control={form.control}
+              inputType="number"
+              name="speed"
+              label="Speed"
+              placeholder="Enter the drone's speed (km/h)"
+            />
+            <InputCommon
+              control={form.control}
+              inputType="number"
+              name="flight_duration"
+              label="Flight Duration"
+              placeholder="Enter the drone's Flight Duration (hours)"
+            />
+            <InputCommon
+              control={form.control}
+              inputType="number"
+              name="ceiling"
+              label="Ceiling"
+              placeholder="Enter the maximum altitude the drone can fly (meters)"
+            />
+
+            <InputCommon
+              control={form.control}
+              inputType="number"
+              name="fps"
+              label="FPS"
+              placeholder="Enter the drone's camera frame rate (FPS)"
+            />
+            {station.loading ? (
+              <Skeleton className="h-9 w-full" />
+            ) : (
+              <SelectCommon
+                control={form.control}
+                name="station_id"
+                label="Stations"
+                items={station.stations.data}
+                placeholder="Please select a station"
+              />
+            )}
+            <Button type="submit" variant="hover-blue-full">
+              Add Operator
+            </Button>
           </form>
         </Form>
       </div>
     </div>
   );
 };
-
+const stationDropDownItems = [
+  {
+    name: "Shamsabad Station",
+    value: "shamsabadStation",
+  },
+  {
+    name: "Rehmanabad Station",
+    value: "rehmanabadStation",
+  },
+  {
+    name: "6th Road Station",
+    value: "sixthRoadStation",
+  },
+];
 export default Page;

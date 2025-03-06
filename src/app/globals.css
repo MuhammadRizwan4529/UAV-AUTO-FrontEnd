@@ -4,9 +4,32 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.custom-input-field {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color) !important;
+  background-color: transparent !important;
+  color: black;
+  outline: none;
+  transition: border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.custom-input-field:focus {
+  border: 1px solid var(--primary-color) !important;
+  /* box-shadow: 0 0 0 2px #1976d2; */
+}
+
+input:-webkit-autofill {
+  background-color: var(--background-color) !important;
+  color: black !important;
+  box-shadow: 0 0 0px 1000px var(--background-color) inset !important;
+}
+
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --primary-custom: #1976d2;
 }
 
 :root {

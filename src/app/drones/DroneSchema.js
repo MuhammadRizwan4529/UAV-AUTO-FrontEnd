@@ -1,23 +1,25 @@
-const { z } = require("zod");
+"use client";
+
+import { z } from "zod";
 
 export const addDroneSchema = z.object({
   name: z
     .string()
     .min(2, { message: "Drone name must be at least 2 characters long." }),
 
-  speed: z.number().min(1, { message: "Speed must be at least 1 km/h." }),
+  speed: z.string().min(1, { message: "Speed must be at least 1 km/h." }),
 
   flight_duration: z
-    .number()
+    .string()
     .min(1, { message: "Flight duration must be at least 1 hour." }),
 
   ceiling: z
-    .number()
+    .string()
     .min(1, { message: "Ceiling height must be at least 1 meter." }),
 
-  fps: z.number().min(1, { message: "Camera FPS must be at least 1." }),
+  fps: z.string().min(1, { message: "Camera FPS must be at least 1." }),
 
-  station: z.string().min(1, { message: "Please select a station." }),
+  station_id: z.string().min(1, { message: "Please select a station." }),
 
   image: z.custom((file) => file instanceof File, {
     message: "Please upload a valid image file.",

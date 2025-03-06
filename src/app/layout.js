@@ -1,6 +1,11 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import { SidebarProvider, SidebarTrigger } from "../components/ui/sidebar";
+import { SidebarCommon } from "../components/common/SidebarCommon";
+import { Provider } from "react-redux";
+import { store } from "@/Store/Store";
+import ReduxProvider from "@/Store/ReduxProvider";
+import SidebarLayout from "@/app/SidebarLayout";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -22,7 +27,9 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ReduxProvider>
+          <SidebarLayout>{children}</SidebarLayout>
+        </ReduxProvider>
       </body>
     </html>
   );
